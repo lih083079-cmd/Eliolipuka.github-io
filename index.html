@@ -1,7 +1,745 @@
+以下是您需要的“番茄时钟”HTML代码。它是一个可直接运行的网页，包含了工作/休息计时、任务列表和白噪音功能。
+
+```html
 <!DOCTYPE html>
-<html>
-<head><title>My Page</title></head>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0, minimum-scale=0.5">
+  <title>🍅 番茄时钟 · 专注计时器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #fbe9e7 0%, #ffccbc 100%);
+      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .tomato-card {
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 248, 245, 0.85);
+      backdrop-filter: blur(25px);
+      background: #fff5f0;
+      border-radius: 56px;
+      padding: 32px 28px;
+      box-shadow: 0 35px 60px rgba(180, 60, 20, 0.25), 0 15px 25px rgba(0, 0, 0, 0.1), inset 0 2px 8px rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 220, 200, 0.7);
+      transition: all 0.2s ease;
+    }
+
+    h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 2.2rem;
+      color: #b34b3a;
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      text-shadow: 2px 2px 0 rgba(255, 200, 150, 0.4);
+    }
+
+    h1 span {
+      font-size: 2.4rem;
+    }
+
+    .timer-section {
+      background: #fceae4;
+      border-radius: 120px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      box-shadow: inset 0 6px 12px rgba(160, 80, 40, 0.15), 0 12px 18px rgba(190, 100, 50, 0.25);
+      border: 1px solid #f7c9b0;
+    }
+
+    .mode-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #7b4b3a;
+      background: rgba(255, 220, 200, 0.5);
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .mode-btn.active {
+      background: #d95b43;
+      color: white;
+      box-shadow: 0 8px 16px rgba(200, 70, 30, 0.5);
+      transform: scale(1.05);
+      border: 1px solid #ffb08c;
+    }
+
+    .display-time {
+      font-size: 5.8rem;
+      font-weight: 700;
+      text-align: center;
+      color: #3e2c24;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+      letter-spacing: 4px;
+      margin: 8px 0 16px;
+      text-shadow: 0 4px 8px rgba(170, 80, 30, 0.2);
+      word-break: break-word;
+    }
+
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .circle-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: white;
+      border: none;
+      box-shadow: 0 10px 20px rgba(180, 80, 40, 0.4), 0 4px 8px rgba(0,0,0,0.1);
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #b34b3a;
+      background: #fff8f4;
+      border: 1px solid #f7cdb5;
+    }
+
+    .circle-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 5px 12px rgba(170, 70, 20, 0.5);
+    }
+
+    .circle-btn.reset-btn {
+      font-size: 1.8rem;
+      background: #fce4db;
+      color: #8b4b39;
+    }
+
+    .task-panel {
+      background: #ffffffeb;
+      backdrop-filter: blur(15px);
+      background: #fffbf7;
+      border-radius: 40px;
+      padding: 20px 20px 16px;
+      margin: 24px 0 18px;
+      box-shadow: inset 0 1px 8px rgba(255,255,240,0.9), 0 12px 22px rgba(180, 80, 20, 0.2);
+      border: 1px solid #ffdccf;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: #7b4b3a;
+    }
+
+    .task-input-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .task-input {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 50px;
+      border: 1px solid #efcdb8;
+      background: #fffaf5;
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.2s;
+      color: #3e2c24;
+      box-shadow: inset 0 2px 6px rgba(180, 100, 40, 0.08);
+    }
+
+    .task-input:focus {
+      border-color: #d95b43;
+      box-shadow: 0 0 0 3px rgba(217, 91, 67, 0.3);
+    }
+
+    .add-btn {
+      background: #d95b43;
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 0 24px;
+      border-radius: 50px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(200, 70, 30, 0.4);
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .add-btn:active {
+      background: #b5452f;
+      transform: scale(0.95);
+    }
+
+    .task-list {
+      list-style: none;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fef4ed;
+      border-radius: 30px;
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      border: 1px solid #fad9c6;
+      transition: 0.2s;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .task-check {
+      width: 22px;
+      height: 22px;
+      accent-color: #d95b43;
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+
+    .task-text {
+      font-size: 0.95rem;
+      color: #4e3629;
+      word-break: break-word;
+    }
+
+    .completed-task {
+      text-decoration: line-through;
+      color: #b68b7a;
+      opacity: 0.7;
+    }
+
+    .delete-task {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #c2846a;
+      padding: 4px 8px;
+      border-radius: 20px;
+      transition: 0.2s;
+    }
+
+    .delete-task:hover {
+      background: #f7cfbc;
+      color: #a53520;
+    }
+
+    .ambiance-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 8px;
+      color: #7b4b3a;
+      font-weight: 500;
+    }
+
+    .sound-toggle {
+      background: #fadfd2;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+      color: #5e3a2c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(180, 80, 20, 0.2);
+    }
+
+    .sound-toggle.active {
+      background: #c25d41;
+      color: white;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #b5826c;
+      margin-top: 8px;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 450px) {
+      .display-time {
+        font-size: 4.2rem;
+      }
+    }
+  </style>
+</head>
 <body>
-  <h1>Hello! 网页建好了！</h1>
+  <div class="tomato-card">
+    <h1>
+      <span>🍅</span> 番茄时钟
+    </h1>
+
+    <!-- 计时器区域 -->
+    <div class="timer-section">
+      <div class="mode-tabs">
+        <button id="workModeBtn" class="mode-btn active">🍅 专注</button>
+        <button id="breakModeBtn" class="mode-btn">☕ 休息</button>
+      </div>
+      <div class="display-time" id="timeDisplay">25:00</div>
+      <div class="control-buttons">
+        <button class="circle-btn reset-btn" id="resetBtn" title="重置">↺</button>
+        <button class="circle-btn" id="startPauseBtn" title="开始/暂停">▶</button>
+      </div>
+    </div>
+
+    <!-- 任务列表 -->
+    <div class="task-panel">
+      <div class="task-header">
+        <span>📋 今日任务</span>
+        <span id="taskCounter">0 项</span>
+      </div>
+      <div class="task-input-area">
+        <input type="text" class="task-input" id="taskInput" placeholder="添加任务..." autocomplete="off">
+        <button class="add-btn" id="addTaskBtn">+</button>
+      </div>
+      <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <!-- 白噪音 / 氛围 -->
+    <div class="ambiance-row">
+      <button id="soundToggle" class="sound-toggle">
+        <span>🔇</span> 白噪音
+      </button>
+      <span style="font-size:0.9rem;">☕️ 帮助专注</span>
+    </div>
+    <div class="footer-note">
+      点击 ▶ 开始番茄 · 每25分钟专注
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 状态定义 ----------
+      const WORK_DURATION = 25 * 60;      // 25分钟 (秒)
+      const BREAK_DURATION = 5 * 60;     // 5分钟
+
+      // 当前模式: 'work' 或 'break'
+      let currentMode = 'work';
+      // 剩余秒数
+      let timeLeft = WORK_DURATION;
+      // 计时器ID
+      let timerInterval = null;
+      // 是否正在运行
+      let isRunning = false;
+
+      // 任务数据
+      let tasks = [];
+
+      // 音频上下文相关 (白噪音)
+      let audioContext = null;
+      let noiseNode = null;
+      let gainNode = null;
+      let isSoundActive = false;
+
+      // ---------- DOM 元素 ----------
+      const timeDisplay = document.getElementById('timeDisplay');
+      const startPauseBtn = document.getElementById('startPauseBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const workModeBtn = document.getElementById('workModeBtn');
+      const breakModeBtn = document.getElementById('breakModeBtn');
+      const taskInput = document.getElementById('taskInput');
+      const addTaskBtn = document.getElementById('addTaskBtn');
+      const taskList = document.getElementById('taskList');
+      const taskCounter = document.getElementById('taskCounter');
+      const soundToggle = document.getElementById('soundToggle');
+
+      // ---------- 工具函数：格式化时间 mm:ss ----------
+      function formatTime(seconds) {
+        if (seconds < 0) seconds = 0;
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      // 更新显示
+      function updateDisplay() {
+        timeDisplay.textContent = formatTime(timeLeft);
+      }
+
+      // 停止计时器 (清除interval)
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        isRunning = false;
+        startPauseBtn.textContent = '▶';
+      }
+
+      // 根据模式设置时间
+      function setTimeByMode(mode) {
+        if (mode === 'work') {
+          timeLeft = WORK_DURATION;
+        } else {
+          timeLeft = BREAK_DURATION;
+        }
+        updateDisplay();
+      }
+
+      // 切换模式 (不自动启动计时器)
+      function switchMode(mode) {
+        if (currentMode === mode) return;
+        
+        // 停止当前计时
+        stopTimer();
+        
+        currentMode = mode;
+        
+        // 更新按钮激活样式
+        if (mode === 'work') {
+          workModeBtn.classList.add('active');
+          breakModeBtn.classList.remove('active');
+        } else {
+          breakModeBtn.classList.add('active');
+          workModeBtn.classList.remove('active');
+        }
+        
+        setTimeByMode(mode);
+      }
+
+      // 计时结束处理
+      function handleTimerComplete() {
+        stopTimer();
+        
+        // 播放提示音 (使用简单的浏览器通知或alert, 同时可播放短促音)
+        playCompletionSound();
+        
+        // 根据当前模式给出提醒
+        if (currentMode === 'work') {
+          alert('🍅 专注时间结束！该休息一下啦～');
+          // 自动切换到休息模式 (但保持停止状态)
+          switchMode('break');
+        } else {
+          alert('☕ 休息结束！可以开始新的番茄了。');
+          switchMode('work');
+        }
+        
+        // 重置计时器到新模式对应时间 (已通过switchMode设置)
+        // 但确保显示正确
+        updateDisplay();
+      }
+
+      // 简单的完成提示音 (使用Web Audio短促音，避免依赖外部文件)
+      function playCompletionSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audioCtx.createOscillator();
+          const gainNodeLocal = audioCtx.createGain();
+          oscillator.connect(gainNodeLocal);
+          gainNodeLocal.connect(audioCtx.destination);
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+          gainNodeLocal.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNodeLocal.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+          
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.4);
+          
+          // 额外再叠加一个短音
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(1000, audioCtx.currentTime + 0.15);
+          gain2.gain.setValueAtTime(0.2, audioCtx.currentTime + 0.15);
+          gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+          osc2.start(audioCtx.currentTime + 0.15);
+          osc2.stop(audioCtx.currentTime + 0.5);
+        } catch (e) {
+          console.log('无法播放提示音', e);
+        }
+      }
+
+      // 开始计时器
+      function startTimer() {
+        if (isRunning) return;
+        if (timeLeft <= 0) {
+          // 如果时间为0，重置到当前模式时间
+          setTimeByMode(currentMode);
+        }
+        
+        isRunning = true;
+        startPauseBtn.textContent = '⏸️';
+        
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateDisplay();
+          
+          if (timeLeft <= 0) {
+            stopTimer();
+            handleTimerComplete();
+          }
+        }, 1000);
+      }
+
+      // 暂停计时器
+      function pauseTimer() {
+        if (!isRunning) return;
+        stopTimer();
+        startPauseBtn.textContent = '▶';
+      }
+
+      // 重置当前模式时间
+      function resetTimer() {
+        stopTimer();
+        setTimeByMode(currentMode);
+        startPauseBtn.textContent = '▶';
+      }
+
+      // ---------- 任务管理 ----------
+      function renderTasks() {
+        taskList.innerHTML = '';
+        tasks.forEach((task, index) => {
+          const li = document.createElement('li');
+          li.className = 'task-item';
+          
+          const leftDiv = document.createElement('div');
+          leftDiv.className = 'task-left';
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'task-check';
+          checkbox.checked = task.completed;
+          checkbox.addEventListener('change', () => {
+            tasks[index].completed = checkbox.checked;
+            renderTasks();
+          });
+          
+          const span = document.createElement('span');
+          span.className = 'task-text' + (task.completed ? ' completed-task' : '');
+          span.textContent = task.text;
+          
+          leftDiv.appendChild(checkbox);
+          leftDiv.appendChild(span);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-task';
+          deleteBtn.innerHTML = '🗑️';
+          deleteBtn.setAttribute('aria-label', '删除任务');
+          deleteBtn.addEventListener('click', () => {
+            tasks.splice(index, 1);
+            renderTasks();
+          });
+          
+          li.appendChild(leftDiv);
+          li.appendChild(deleteBtn);
+          taskList.appendChild(li);
+        });
+        
+        // 更新计数器
+        const total = tasks.length;
+        const completedCount = tasks.filter(t => t.completed).length;
+        taskCounter.textContent = `${total} 项 · 完成 ${completedCount}`;
+      }
+
+      function addNewTask() {
+        const text = taskInput.value.trim();
+        if (text === '') {
+          taskInput.placeholder = '请输入任务内容';
+          taskInput.focus();
+          return;
+        }
+        
+        tasks.push({
+          text: text,
+          completed: false
+        });
+        
+        taskInput.value = '';
+        taskInput.focus();
+        renderTasks();
+      }
+
+      // ---------- 白噪音 (柔和布朗噪声/粉噪模拟) ----------
+      function createWhiteNoise() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // 创建缓冲区并填充噪声
+        const bufferSize = 2 * audioContext.sampleRate;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // 生成类似棕噪声 (更柔和) 通过积分白噪声
+        let lastOut = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          // 简单低通滤波/积分产生棕色噪声效果
+          lastOut = (lastOut + (0.02 * white)) / 1.02;
+          data[i] = lastOut * 3.5; // 调整幅度
+        }
+        
+        const noiseSource = audioContext.createBufferSource();
+        noiseSource.buffer = buffer;
+        noiseSource.loop = true;
+        
+        gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.12; // 轻柔音量
+        
+        // 可选滤波器让声音更闷
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400;
+        
+        noiseSource.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        noiseSource.start(0);
+        return noiseSource;
+      }
+
+      function startSound() {
+        if (isSoundActive) return;
+        try {
+          if (!audioContext || audioContext.state === 'closed') {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          noiseNode = createWhiteNoise();
+          isSoundActive = true;
+          soundToggle.classList.add('active');
+          soundToggle.innerHTML = '<span>🔊</span> 白噪音';
+        } catch (e) {
+          console.warn('无法播放白噪音', e);
+        }
+      }
+
+      function stopSound() {
+        if (!isSoundActive) return;
+        try {
+          if (noiseNode) {
+            noiseNode.stop();
+            noiseNode.disconnect();
+            noiseNode = null;
+          }
+          if (gainNode) {
+            gainNode.disconnect();
+            gainNode = null;
+          }
+          isSoundActive = false;
+          soundToggle.classList.remove('active');
+          soundToggle.innerHTML = '<span>🔇</span> 白噪音';
+        } catch (e) {}
+      }
+
+      function toggleSound() {
+        if (isSoundActive) {
+          stopSound();
+        } else {
+          startSound();
+        }
+      }
+
+      // 清理音频资源 (页面关闭时建议, 但不是必须)
+      window.addEventListener('beforeunload', () => {
+        stopSound();
+        if (audioContext && audioContext.state !== 'closed') {
+          audioContext.close();
+        }
+      });
+
+      // ---------- 事件绑定 ----------
+      startPauseBtn.addEventListener('click', () => {
+        if (isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      });
+
+      resetBtn.addEventListener('click', resetTimer);
+
+      workModeBtn.addEventListener('click', () => {
+        if (currentMode !== 'work') {
+          switchMode('work');
+        }
+      });
+
+      breakModeBtn.addEventListener('click', () => {
+        if (currentMode !== 'break') {
+          switchMode('break');
+        }
+      });
+
+      addTaskBtn.addEventListener('click', addNewTask);
+      taskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          addNewTask();
+        }
+      });
+
+      soundToggle.addEventListener('click', toggleSound);
+
+      // 初始渲染任务 (可能为空)
+      renderTasks();
+      
+      // 确保显示正确
+      updateDisplay();
+      // 初始状态：工作模式激活，按钮显示暂停/播放
+      startPauseBtn.textContent = '▶';
+      
+      // 额外：如果用户点击模式时正在运行，最好停止？已在switchMode中调用stopTimer，安全。
+    })();
+  </script>
 </body>
 </html>
+```
